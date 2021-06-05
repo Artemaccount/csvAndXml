@@ -4,32 +4,61 @@ import com.opencsv.CSVReader;
 import com.opencsv.bean.ColumnPositionMappingStrategy;
 import com.opencsv.bean.CsvToBean;
 import com.opencsv.bean.CsvToBeanBuilder;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import org.w3c.dom.*;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public class Main {
     public static void main(String[] args) {
         List<Employee> employeeList = new ArrayList<>();
-        String[] columnMapping = {"id", "firstName", "lastName", "country", "age"};
-        String csvFileName = "data.csv";
-        String xmlFileName = "data.xml";
+//        String[] columnMapping = {"id", "firstName", "lastName", "country", "age"};
+//        String csvFileName = "data.csv";
+//        String xmlFileName = "data.xml";
         //employeeList = parseCSV(columnMapping, csvFileName);
+//        try {
+//            employeeList = parseXML(xmlFileName);
+//        } catch (Exception e) {
+//            System.out.println(e.getMessage());
+//        }
+//        String json = listToJson(employeeList);
+//        writeString(json);
         try {
-            employeeList = parseXML(xmlFileName);
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
+            employeeList = jsonToList("new_data.json");
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ParseException e) {
+            e.printStackTrace();
         }
-        String json = listToJson(employeeList);
-        writeString(json);
+        System.out.println(employeeList.toString());
     }
+
+    private static List<Employee> jsonToList (String fileName) throws IOException, ParseException {
+        List<Employee> employeeList = new ArrayList<>();
+        JSONParser parser = new JSONParser();
+        Object obj = parser.parse(new FileReader(fileName));
+            JSONArray employeeJsonArray = (JSONArray) obj;
+            for (Object it : employeeJsonArray) {
+                JSONObject employeeJsonObject = (JSONObject) it;
+                long id = (Long) employeeJsonObject.get("id");
+                String firstName = (String) employeeJsonObject.get("firstName");
+                String lastName = (String) employeeJsonObject.get("lastName");
+                String country = (String) employeeJsonObject.get("country");
+                long age = (Long) employeeJsonObject.get("age");
+                Employee employee = new Employee(id, firstName, lastName, country, (int) age);
+                employeeList.add(employee);
+            }
+        return  employeeList;
+        }
+
 
     private static List<Employee> parseXML(String xmlFileName) {
         List<Employee> employeeList = new ArrayList();

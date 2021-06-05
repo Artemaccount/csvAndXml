@@ -11,7 +11,13 @@ public class Employee {
 
     @Override
     public String toString() {
-        return firstName + " " + lastName;
+        return "Employee{" +
+                "id=" + id +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", country='" + country + '\'' +
+                ", age=" + age +
+                '}';
     }
 
     public Employee(long id, String firstName, String lastName, String country, int age) {
